@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleTables;
+using System;
 
 namespace IncoomeTaxCalculator
 {
@@ -12,33 +13,31 @@ namespace IncoomeTaxCalculator
         {
             return pension + mortgage;
         }
-        static decimal Tax(decimal TaxableIncome, decimal premium)
+        static decimal Tax(decimal TaxableIncome, decimal premium, decimal insuranceRelief)
         {
             decimal personalRelief = 2400;
-            decimal insuranceRelief = Convert.ToDecimal(0.15) * premium;
             decimal payableTax = Convert.ToDecimal(0) - personalRelief - insuranceRelief;
                         
             if (TaxableIncome < Convert.ToDecimal(24000))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Gross pay is less than the minimum taxable income");
+                Console.ForegroundColor = ConsoleColor.White;
                 payableTax = Convert.ToDecimal(0);
             }
-            else if(TaxableIncome >= Convert.ToDecimal(24000))
+            if(TaxableIncome >= Convert.ToDecimal(24000))
             {
                 payableTax += Convert.ToDecimal(0.1 * 24000);
+                TaxableIncome -= 24000;
             }
-            else if (TaxableIncome > Convert.ToDecimal(24000) && TaxableIncome < Convert.ToDecimal(3233))
+            if (TaxableIncome > Convert.ToDecimal(24000))
             {
                 payableTax += Convert.ToDecimal(0.25 * 8333);
+                TaxableIncome -= 8333;
             }
-            else 
+            if(TaxableIncome > Convert.ToDecimal(32333))
             {
-                payableTax += Convert.ToDecimal(0.3) * (TaxableIncome - Convert.ToDecimal(3233));
-            }
-
-            if (Tax(TaxableIncome, premium) < Convert.ToDecimal(0))
-            {
-                payableTax = Convert.ToDecimal(0);
+                payableTax += Convert.ToDecimal(0.3) * TaxableIncome;
             }
 
             return payableTax ;
@@ -62,15 +61,35 @@ namespace IncoomeTaxCalculator
             Console.WriteLine();
 
             decimal insuranceRelief = Convert.ToDecimal(0.15) * PremiumPaid;
+            var totalDeductions = TotalDeductions(pensionContribution, mortgageInterest);
+            var taxableIncome = TaxableIncome(grossPay, pensionContribution, mortgageInterest);
+            var tax = Tax(taxableIncome, PremiumPaid, insuranceRelief);
 
-            Console.WriteLine("Grosspay: " + grossPay);
-            Console.WriteLine("Pension Contribution: " + pensionContribution);
-            Console.WriteLine("Mortgage interest: " + mortgageInterest);
-            Console.WriteLine("Total deductions: " + TotalDeductions(pensionContribution, mortgageInterest));
-            Console.WriteLine("Taxable income: " + TaxableIncome(grossPay, pensionContribution, mortgageInterest));
-            Console.WriteLine("Peronal relief: " + personalRelief);
-            Console.WriteLine("Insurance relief: " + insuranceRelief);
-            Console.WriteLine("Tax: " + Tax(TaxableIncome(grossPay, pensionContribution, mortgageInterest), PremiumPaid));
+            var table = new ConsoleTable("Name", "Amount (Ksh)");
+            table.AddRow("Gross Income", grossPay)
+                 .AddRow("Pension Contribution", pensionContribution)
+                 .AddRow("Mortgage Interest", mortgageInterest)
+                 .AddRow("Total Deductions", totalDeductions)
+                 .AddRow("Taxable Income", taxableIncome)
+                 .AddRow("Personal Relief", personalRelief)
+                 .AddRow("Insurance Relies", insuranceRelief)
+                 .AddRow("PAYE", tax);
+
+            table.Write();
+
+            Console.WriteLine("press 1 to restart.press 2 end");
+            ConsoleKeyInfo ch;
+            ch = Console.ReadKey();
+            if (ch.Key == ConsoleKey.NumPad2)
+            {
+                Environment.Exit(0);
+            }
+            else if (ch.Key == ConsoleKey.NumPad1)
+            {
+                Console.WriteLine("Error");
+                
+            }
+                
         }
     }
 }
