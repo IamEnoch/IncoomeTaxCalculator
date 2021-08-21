@@ -42,54 +42,70 @@ namespace IncoomeTaxCalculator
 
             return payableTax ;
         }
-        static void Main(string[] args)
+        static string Userchoice()
         {
-            decimal personalRelief = Convert.ToDecimal(2400);
-
-            Console.Write("Enter the gross pay: ");
-            decimal grossPay = Convert.ToDecimal(Console.ReadLine());
-
-            Console.Write("Enter the NSSF Contribution / Pension amount: ");
-            decimal pensionContribution = Convert.ToDecimal(Console.ReadLine());
-
-            Console.Write("Enter the Interest on Mortgage paid amount: ");
-            decimal mortgageInterest = Convert.ToDecimal(Console.ReadLine());
-
-            Console.Write("Enter the Insurance Premium paid amount: ");
-            decimal PremiumPaid = Convert.ToDecimal(Console.ReadLine());
-
-            Console.WriteLine();
-
-            decimal insuranceRelief = Convert.ToDecimal(0.15) * PremiumPaid;
-            var totalDeductions = TotalDeductions(pensionContribution, mortgageInterest);
-            var taxableIncome = TaxableIncome(grossPay, pensionContribution, mortgageInterest);
-            var tax = Tax(taxableIncome, PremiumPaid, insuranceRelief);
-
-            var table = new ConsoleTable("Name", "Amount (Ksh)");
-            table.AddRow("Gross Income", grossPay)
-                 .AddRow("Pension Contribution", pensionContribution)
-                 .AddRow("Mortgage Interest", mortgageInterest)
-                 .AddRow("Total Deductions", totalDeductions)
-                 .AddRow("Taxable Income", taxableIncome)
-                 .AddRow("Personal Relief", personalRelief)
-                 .AddRow("Insurance Relies", insuranceRelief)
-                 .AddRow("PAYE", tax);
-
-            table.Write();
-
-            Console.WriteLine("press 1 to restart.press 2 end");
-            ConsoleKeyInfo ch;
-            ch = Console.ReadKey();
-            if (ch.Key == ConsoleKey.NumPad2)
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Write 'Continue' to enter new data for calculation. Write 'Exit' or 'Cancel' to terminate the calculation");
+            Console.ForegroundColor = ConsoleColor.White;            
+            string input = Console.ReadLine();
+            string choice = input.ToUpper();
+            if (choice == "CONTINUE")
+            {
+                Console.Clear();
+            }
+            else if (choice == "EXIT" || choice == "CANCEL")
             {
                 Environment.Exit(0);
             }
-            else if (ch.Key == ConsoleKey.NumPad1)
+            else
             {
-                Console.WriteLine("Error");
-                
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR!!!");
+                Console.ForegroundColor = ConsoleColor.White;
+                Userchoice();
             }
-                
+            return choice;
+        }
+        static void Main(string[] args)
+        {
+            string choice;
+            do
+            {
+                decimal personalRelief = Convert.ToDecimal(2400);
+
+                Console.Write("Enter the gross pay: ");
+                decimal grossPay = Convert.ToDecimal(Console.ReadLine());
+
+                Console.Write("Enter the NSSF Contribution / Pension amount: ");
+                decimal pensionContribution = Convert.ToDecimal(Console.ReadLine());
+
+                Console.Write("Enter the Interest on Mortgage paid amount: ");
+                decimal mortgageInterest = Convert.ToDecimal(Console.ReadLine());
+
+                Console.Write("Enter the Insurance Premium paid amount: ");
+                decimal PremiumPaid = Convert.ToDecimal(Console.ReadLine());
+
+                Console.WriteLine();
+
+                decimal insuranceRelief = Convert.ToDecimal(0.15) * PremiumPaid;
+                var totalDeductions = TotalDeductions(pensionContribution, mortgageInterest);
+                var taxableIncome = TaxableIncome(grossPay, pensionContribution, mortgageInterest);
+                var tax = Tax(taxableIncome, PremiumPaid, insuranceRelief);
+
+                var table = new ConsoleTable("Name", "Amount (Ksh)");
+                table.AddRow("Gross Income", grossPay)
+                     .AddRow("Pension Contribution", pensionContribution)
+                     .AddRow("Mortgage Interest", mortgageInterest)
+                     .AddRow("Total Deductions", totalDeductions)
+                     .AddRow("Taxable Income", taxableIncome)
+                     .AddRow("Personal Relief", personalRelief)
+                     .AddRow("Insurance Relies", insuranceRelief)
+                     .AddRow("PAYE", tax);
+
+                table.Write();
+
+                choice = Userchoice();
+            } while (choice == "CONTINUE");                               
         }
     }
 }
