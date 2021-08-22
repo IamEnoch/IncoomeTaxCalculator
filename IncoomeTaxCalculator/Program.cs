@@ -13,9 +13,9 @@ namespace IncoomeTaxCalculator
         {
             return pension + mortgage;
         }
-        static decimal Tax(decimal TaxableIncome, decimal premium, decimal insuranceRelief)
+        static decimal Tax(decimal TaxableIncome, decimal insuranceRelief)
         {
-            decimal personalRelief = 2400;
+            const decimal personalRelief = 2400;
             decimal payableTax = Convert.ToDecimal(0) - personalRelief - insuranceRelief;
                         
             if (TaxableIncome < Convert.ToDecimal(24000))
@@ -90,7 +90,7 @@ namespace IncoomeTaxCalculator
                 decimal insuranceRelief = Convert.ToDecimal(0.15) * PremiumPaid;
                 var totalDeductions = TotalDeductions(pensionContribution, mortgageInterest);
                 var taxableIncome = TaxableIncome(grossPay, pensionContribution, mortgageInterest);
-                var tax = Tax(taxableIncome, PremiumPaid, insuranceRelief);
+                var tax = Tax(taxableIncome, insuranceRelief);
 
                 var table = new ConsoleTable("Name", "Amount (Ksh)");
                 table.AddRow("Gross Income", grossPay)
