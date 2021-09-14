@@ -5,43 +5,7 @@ namespace IncoomeTaxCalculator
 {
     class Program
     {
-        static decimal TaxableIncome(decimal gross, decimal pension, decimal mortgage)
-        {
-            return gross - pension - mortgage;
-        }
-        static decimal TotalDeductions(decimal pension,decimal mortgage)
-        {
-            return pension + mortgage;
-        }
-        static decimal Tax(decimal TaxableIncome, decimal insuranceRelief)
-        {
-            const decimal personalRelief = 2400;
-            decimal payableTax = Convert.ToDecimal(0) - personalRelief - insuranceRelief;
-                        
-            if (TaxableIncome < Convert.ToDecimal(24000))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Gross pay is less than the minimum taxable income");
-                Console.ForegroundColor = ConsoleColor.White;
-                payableTax = Convert.ToDecimal(0);
-            }
-            if(TaxableIncome >= Convert.ToDecimal(24000))
-            {
-                payableTax += Convert.ToDecimal(0.1 * 24000);
-                TaxableIncome -= 24000;
-            }
-            if (TaxableIncome > Convert.ToDecimal(24000))
-            {
-                payableTax += Convert.ToDecimal(0.25 * 8333);
-                TaxableIncome -= 8333;
-            }
-            if(TaxableIncome > Convert.ToDecimal(32333))
-            {
-                payableTax += Convert.ToDecimal(0.3) * TaxableIncome;
-            }
-
-            return payableTax ;
-        }
+        
         static string Userchoice()
         {
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -69,36 +33,37 @@ namespace IncoomeTaxCalculator
         static void Main(string[] args)
         {
             string choice;
+            _Tax user = new _Tax();
             do
             {
-                decimal personalRelief = Convert.ToDecimal(2400);
+                user.PersonalRelief = Convert.ToDecimal(2400);
 
                 Console.Write("Enter the gross pay: ");
-                decimal grossPay = Convert.ToDecimal(Console.ReadLine());
+                user.GrossPay = Convert.ToDecimal(Console.ReadLine());
 
                 Console.Write("Enter the NSSF Contribution / Pension amount: ");
-                decimal pensionContribution = Convert.ToDecimal(Console.ReadLine());
+                user.PensionContribution = Convert.ToDecimal(Console.ReadLine());
 
                 Console.Write("Enter the Interest on Mortgage paid amount: ");
-                decimal mortgageInterest = Convert.ToDecimal(Console.ReadLine());
+                user.MortgageInterest = Convert.ToDecimal(Console.ReadLine());
 
                 Console.Write("Enter the Insurance Premium paid amount: ");
-                decimal PremiumPaid = Convert.ToDecimal(Console.ReadLine());
+                user.PremiumPaid = Convert.ToDecimal(Console.ReadLine());
 
                 Console.WriteLine();
 
-                decimal insuranceRelief = Convert.ToDecimal(0.15) * PremiumPaid;
-                var totalDeductions = TotalDeductions(pensionContribution, mortgageInterest);
-                var taxableIncome = TaxableIncome(grossPay, pensionContribution, mortgageInterest);
-                var tax = Tax(taxableIncome, insuranceRelief);
+                decimal insuranceRelief = Convert.ToDecimal(0.15) * user.PremiumPaid;
+                var totalDeductions = user.TotalDeductions(user.PensionContribution, user.MortgageInterest);
+                var taxableIncome = user.TaxableIncome(user.GrossPay, user.PensionContribution, user.MortgageInterest);
+                var tax = user.Tax(taxableIncome, insuranceRelief);
 
                 var table = new ConsoleTable("Name", "Amount (Ksh)");
-                table.AddRow("Gross Income", grossPay)
-                     .AddRow("Pension Contribution", pensionContribution)
-                     .AddRow("Mortgage Interest", mortgageInterest)
+                table.AddRow("Gross Income", user.GrossPay)
+                     .AddRow("Pension Contribution", user.PensionContribution)
+                     .AddRow("Mortgage Interest", user.MortgageInterest)
                      .AddRow("Total Deductions", totalDeductions)
                      .AddRow("Taxable Income", taxableIncome)
-                     .AddRow("Personal Relief", personalRelief)
+                     .AddRow("Personal Relief", user.PersonalRelief)
                      .AddRow("Insurance Relies", insuranceRelief)
                      .AddRow("PAYE", tax);
 
